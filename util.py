@@ -2,39 +2,76 @@ import pandas as pd
 
 input_data =  '2011.01 - 2024.08 VRHCR OPAN Daily Data (결측치가 있는 날짜 제외)'
 
-features = 'VRHCR Feed Property (10개) + 관련 Operation Data (19개)'
+features = '34개 (VRHCR Feed Property 16개 + 관련 Operation Data 18개)'
 
 feed_property = ['API',
-       'Total Sulfur', 'Total Nitrogen', 'viscosity @100°C', 'MCRT', 'Nickel ',
-       'Vanadium', 'Iron', 'Sodium', 'Calcium']
+ 'Total Sulfur',
+ 'Total Nitrogen',
+ 'viscosity 100°C',
+ 'MCRT',
+ 'Nickel ',
+ 'Vanadium',
+ 'Iron',
+ 'Sodium',
+ 'Calcium',
+ 'SEDEX',
+ 'Nitrogen/Sulfur ratio',
+ 'Ni+V',
+ 'Ni+V_sqrt',
+ '4V+Ni']
 
-op_data = ['612FI747.PV', '612FC702.PV', '612FQI116.PV', '612TC138B.PV',
-       '612TC138A.PV', '612PI131A.PV', '612FC123.PV', '612FC124.PV',
-       '612FC125.PV', '612TC168B.PV', '612TC168A.PV', '612FC127A.PV',
-       '612FC127B.PV', '612FC129.pv', '612TC170A.PV', '612PC148A.pv',
-       '612TI707.PV', '612FC195A.PV', '612AI111B3.PV']
+op_data = ['612FC702.PV', '612TC138B.PV', '612TC138A.PV', '612FC124.PV',
+       '612TC168B.PV', '612TC168A.PV', '612FC129.PV', '612TC170A.PV',
+       '612FC195A.PV', '612AI111B3.PV/100', '612FI109.PV', '612FI740.PV',
+       '612FC123.MV', '612SI101.PV', '612SI102.PV', '612AI104E.PV',
+       '612AI107E.PV', 'H2 Partial Pressure']
+
 op_data_new = []
 for i in op_data:
-    i = i.strip('.pv')
     i = i.strip('.PV')
     op_data_new.append(i)
-op_data_new
 
-x_columns = ['Gravity, API', 'Total Sulfur', 'Total Nitrogen', 'vis 100°C', 'MCRT',
-       'Nickel ', 'Vanadium', 'Iron', 'Sodium', 'Calcium']
+x_columns = ['API',
+ 'Total Sulfur',
+ 'Total Nitrogen',
+ 'viscosity 100°C',
+ 'MCRT',
+ 'Nickel ',
+ 'Vanadium',
+ 'Iron',
+ 'Sodium',
+ 'Calcium',
+ 'SEDEX',
+ 'Nitrogen/Sulfur ratio',
+ 'Ni+V',
+ 'Ni+V_sqrt',
+ '4V+Ni']
 
-feat_imp = [0.01498538, 0.02591298, 0.00766891, 0.00961473, 0.01018605,
-       0.03045351, 0.00740778, 0.00478776, 0.02919257, 0.0090797]
+feat_imp = [0.014596118591725826,
+ 0.02278144843876362,
+ 0.006538881920278072,
+ 0.008638361468911171,
+ 0.007710083853453398,
+ 0.034120168536901474,
+ 0.013504697009921074,
+ 0.0056734527461230755,
+ 0.020842691883444786,
+ 0.012839130125939846,
+ 0.005195097532123327,
+ 0.008018482476472855,
+ 0.005018230061978102,
+ 0.0,
+ 0.00446697510778904]
 
 fi_df = pd.DataFrame({'Feature':x_columns, 'Importance':feat_imp}).sort_values(by='Importance', ascending=False)
-
-# rank_table = pd.DataFrame({'등급':['👍 Good','⚠️ Bad','🚫 Worst'], '설명':['원유 비율 30% 에서 SHFT 0.10 % 이하','원유 비율 0 - 30%에서 SHFT 0.10 % 초과','원유 비율 5%에서 SHFT 0.15 % 이상']})                           
+fi_df.reset_index(drop=True, inplace=True)
+                         
 
 rank_table = pd.DataFrame({
     'Grade': [
         "<span style='color: green;'>👍 Good</span>",   # Green for Good
         "<span style='color: orange;'>⚠️ Bad</span>",  # Orange for Bad
         "<span style='color: red;'>🚫 Worst</span>"    # Red for Worst
-    ], '     Description    ':['원유 비율 30% 에서 SHFT 0.10 % 이하','원유 비율 0 - 30%에서 SHFT 0.10 % 초과','원유 비율 5%에서 SHFT 0.15 % 이상']
+    ], 'Description':['예상 SHFT 1,000 ppm 이하','예상 SHFT 1,000 ppm 초과','예상 SHFT 1,500 ppm 초과']
 })
 
