@@ -12,6 +12,12 @@ import joblib
 def load_model():
     return joblib.load("lr.pkl")
 
+def load_scaler():
+    return joblib.load('scaler.pkl')
+
+def load_pca():
+    return joblib.load('pca.pkl')
+
 def load_images():
     return {
         "pre_act_image" : Image.open('pre_act.png'),
@@ -37,7 +43,7 @@ def convert_df(df_input):
     # 제거할 열: 0, 2, 5, 7,11, 13, 16, 17, 18, 19, 20, 21, 22, 23, 24, 26, 27, 28, 29, 30, 31, 32, 33
     col_to_drop = df_input_vr_feed.columns[[0, 2, 5, 7,11, 13, 16, 17, 18, 19, 20, 21, 22, 23, 24, 26, 27, 28, 29, 30, 31, 32, 33]]
     df_input_vr_feed.drop(col_to_drop, axis=1, inplace=True)
-    
+    df_input_vr_feed.drop('SEDEX', axis=1, inplace=True)
     # df dtype 변경
     for col in df_input_vr_feed.columns:
         df_input_vr_feed[col] = df_input_vr_feed[col].astype('float64')
@@ -45,9 +51,6 @@ def convert_df(df_input):
     # 결측치는 평균으로 채우기
     for col in df_input_vr_feed.columns:
         df_input_vr_feed[col].fillna(df_input_vr_feed[col].mean(), inplace=True)
-    
-    # 계산으로 만들어지는 열 추가
-    df_input_vr_feed['N_S_r'] = df_input_vr_feed['Nitrogen ppm']/df_input_vr_feed['Sulfur %']
     
     # 위 df에 2024년 평균 운전 데이터를 merge
     # 먼저 2024년 평균 운전 데이터를 df로 구성
@@ -67,6 +70,8 @@ def convert_df(df_input):
     opavg2024_df_t_repeated.reset_index(drop=True, inplace=True)
     
     df = pd.concat([opavg2024_df_t_repeated, df_input_vr_feed], axis=1)
+    return df
+    # 이후 scaler.pkl을 이용한 표준화, Ni, V에 대한 pca 및 ni, v 제거, vis100을 boxcox로 변환해야 SHFT 예측 가능함
     return df
     # 이후 scaler.pkl을 이용한 standardization, pca를 이용한 Ni, V 관련 pca 추가 및 ni, v 제거까지 해야 SHFT 예측 가능함
 

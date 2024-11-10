@@ -72,6 +72,13 @@ rank_table = pd.DataFrame({
         "<span style='color: green;'>👍 Good</span>",   # Green for Good
         "<span style='color: orange;'>⚠️ Bad</span>",  # Orange for Bad
         "<span style='color: red;'>🚫 Worst</span>"    # Red for Worst
-    ], 'Description':['예상 SHFT 1,000 ppm 이하','예상 SHFT 1,000 ppm 초과','예상 SHFT 1,500 ppm 초과']
+    ], 'Description':['SHFT 영향성 낮음','Worst 15 수준 (상위 10%)','Worst 5 수준 (상위 3%)']
 })
 
+rank_table_SHFT = pd.DataFrame({
+    'Grade': [
+        "<span style='color: green;'>👍 Good</span>",   # Green for Good
+        "<span style='color: orange;'>⚠️ Bad</span>",  # Orange for Bad
+        "<span style='color: red;'>🚫 Worst</span>"    # Red for Worst
+    ], 'Description':['SHFT 800 ppm 이하','SHFT 800 ppm 초과','SHFT 1500 ppm 초과']
+})
