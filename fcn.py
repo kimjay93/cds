@@ -22,7 +22,21 @@ def load_images():
     return {
         "pre_act_image" : Image.open('pre_act.png'),
         "pre_act_trend_image" : Image.open('pre_act_trend.png'),
-        "shap_image" : Image.open('SHAP_fd.png')
+        "FI_LR_image" : Image.open('FI_LR.png'),
+        "corr_image" : Image.open('Corr.png'),
+        "pre_act_image_xgb" : Image.open('pre_act_xgb.png'),
+        "pre_act_trend_image_xgb" : Image.open('pre_act_trend_xgb.png'),
+        "api_shft_2019" : Image.open('api_shft_2019.png'),
+        "Corr_withSEDEX" : Image.open("Corr_withSEDEX.png"),
+        "Corr_withFOI" : Image.open("Corr_withFOI.png"),
+        'SHFT_SEDEX' : Image.open('SHFT_SEDEX.png'),
+        'SHFT_SEDEX_scatter' : Image.open('SHFT_SEDEX_scatter.png'),
+        'SHFT_FOI': Image.open('SHFT_FOI.png'),
+        'SHFT_FOI_scatter' : Image.open('SHFT_FOI_scatter.png'),
+        'SHFT_SARA' : Image.open('SHFT_SARA.png'),
+        'SHFT_SARA_scatter' : Image.open('SHFT_SARA_scatter.png'),
+        'Corr_withSARA' : Image.open('Corr_withSARA.png')
+        
     }
     
 def analyzeDF():
@@ -40,10 +54,11 @@ def convert_df(df_input):
     df_input_vr_feed.columns = df_input_vr_feed.iloc[0]
     df_input_vr_feed = df_input_vr_feed[1:].reset_index(drop=True)
     
-    # 제거할 열: 0, 2, 5, 7,11, 13, 16, 17, 18, 19, 20, 21, 22, 23, 24, 26, 27, 28, 29, 30, 31, 32, 33
-    col_to_drop = df_input_vr_feed.columns[[0, 2, 5, 7,11, 13, 16, 17, 18, 19, 20, 21, 22, 23, 24, 26, 27, 28, 29, 30, 31, 32, 33]]
+    # 제거할 열: 0, 2, 5, 7,11, 13, 16, 17, 18, 19, (20 NC7은 포함) 21, 22, 23, 24, 26, 27, 28, 29, 30, 31, 32, 33 + SEDEX
+    col_to_drop = df_input_vr_feed.columns[[0, 2, 5, 7,11, 13, 16, 17, 18, 19, 21, 22, 23, 24, 26, 27, 28, 29, 30, 31, 32, 33]]
     df_input_vr_feed.drop(col_to_drop, axis=1, inplace=True)
     df_input_vr_feed.drop('SEDEX', axis=1, inplace=True)
+    
     # df dtype 변경
     for col in df_input_vr_feed.columns:
         df_input_vr_feed[col] = df_input_vr_feed[col].astype('float64')
@@ -54,7 +69,7 @@ def convert_df(df_input):
     
     # 위 df에 2024년 평균 운전 데이터를 merge
     # 먼저 2024년 평균 운전 데이터를 df로 구성
-    df = pd.read_csv('df_38thtrial.csv')
+    df = pd.read_csv('df_58thtrial.csv')
     df['Datetime'] = df['Datetime'].astype('datetime64[ns]')
     df.set_index('Datetime', drop=True, inplace=True)
     df = df.loc[df.index.year == 2024]
@@ -71,9 +86,7 @@ def convert_df(df_input):
     
     df = pd.concat([opavg2024_df_t_repeated, df_input_vr_feed], axis=1)
     return df
-    # 이후 scaler.pkl을 이용한 표준화, Ni, V에 대한 pca 및 ni, v 제거, vis100을 boxcox로 변환해야 SHFT 예측 가능함
-    return df
-    # 이후 scaler.pkl을 이용한 standardization, pca를 이용한 Ni, V 관련 pca 추가 및 ni, v 제거까지 해야 SHFT 예측 가능함
+    # 이후 scaler.pkl을 이용한 표준화, Ni, V에 대한 pca 및 ni, v 제거, vis100을 sqrt 변환해야 SHFT 예측 가능함
 
 def convert_df_info(df_input):
     # crude information 담고 있는 df 따로 추출
